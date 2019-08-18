@@ -7,46 +7,7 @@
 // Binbin.Wang C3214157
 
 
-// whiteSpace         			  空格
-// theKeywords       			  关键字	
-// Delimiters and Operators       分隔符 和 操作符
-// Comments    /--                注释
-// identifiersKeywords   TIDEN    关键字   
-// integerConstants      TILIT    整数
-// floatingConstants     TFLIT    小数
-// stringConstants       TSTRG    字符串
-// erro                  TUNDF    未定义 (错误)
-	// TCOMA = 32   //  ,
-	// TLBRK = 33   //  [
-	// TRBRK = 34   //  ]
-	// TLPAR = 35   //  (
-	// TRPAR = 36   //  )
-	// TEQUL = 37   //  =
-	// TPLUS = 38   //  +
-	// TMINS = 39   //  -
-	// TSTAR = 40   //  *
-	// TDIVD = 41   //  /
-	// TPERC = 42   //  %
-	// TCART = 43   //  ^
-	// TLESS = 44   //  <
-	// TGRTR = 45   //  >
-	// TCOLN = 46   //  :
-	// TLEQL = 47   //  <=
-	// TGEQL = 48   //  >=
-	// TNEQL = 49   //  !=
-	// TEQEQ = 50   //  ==
-	// TPLEQ = 51   //  +=
-	// TMNEQ = 52   //  -=
-	// TSTEQ = 53   //  *=
-	// TDVEQ = 54   //  /=
-	// TPCEQ = 55   //  %=
-	// TSEMI = 56   //  ;
-	// TDOT  = 57   //  .
-	// TIDEN = 58     关键字   
-	// TILIT = 59  	  整数
-	// TFLIT = 60     小数
-	// TSTRG = 61 	  字符串
-	// TUNDF = 62  	  未定义 (错误)
+
 
 import java.util.ArrayList;
 
@@ -62,30 +23,15 @@ public class Scanner{
 	private String fileName;
 	private int lineNum;
 	private int columnNum;
-		String tempLineStr=strArrayLine.get(lineNum);
-		char[] tempLineChar=tempLineStr.toCharArray();
-		char currentChar=tempLineChar[columnNum];
-		char nextChar=tempLineChar[columnNum+1];
-		int currentType=getType(tempLineChar[columnNum]);
-		int nextType=getType(tempLineChar[columnNum+1]);
-		int tokenMark=0;
-		String lexeme="";
-	
 
-	
+	private char nextChar;
+	private int nextType;	
+	char[] tempLineChar;
 	//
 	public Scanner(){
 		
 	}
-	// delete comments 删除注释
-	private String delComment(String strLine){
-		int i=strLine.indexOf("/--");
-		if(i>=0){
-			strLine=strLine.substring(0,i);
-		}
-		return strLine;
-		
-	}
+
 	//Constructor Initialization input String
 	public Scanner(String name){
 		fileEOF=false;
@@ -123,85 +69,101 @@ public class Scanner{
 	public boolean eof(){
 		return this.fileEOF;
 	}
-
+	
+	private void nextLexemeColumn(){
+		//find next lexeme starting line and column number
+		
+		while(lineNum <= strArrayLine.size()){
+			
+			int columnL=strArrayLine.get(lineNum).length();
+			String tempLineStr=strArrayLine.get(lineNum);
+			char[] tempLineChar=tempLineStr.toCharArray();
+			
+			while(columnNum<=columnL){
+				int currentType=getType(tempLineChar[columnNum]);
+				if (currentType!=0){
+					return;
+				}
+				columnNum++;
+			}
+			columnNum=0;
+			lineNum++;
+		}
+		if (lineNum>strArrayLine.size()){
+			fileEOF=true;
+		}
+	}
 
 
 	public Token getToken(){
 		
 
+		int tokenMark=0;
+		String tempLineStr=strArrayLine.get(lineNum);
+		tempLineChar=tempLineStr.toCharArray();
+		
+		char currentChar=tempLineChar[columnNum];
+		int currentType=getType(currentChar);
+		
+		nextChar=tempLineChar[columnNum+1];
+		nextType=getType(nextChar);		
+
+		int tempColumnNum=columnNum;			
+		
+		String lexeme="";		
 		currentType=getType(currentChar);
 		nextType=getType(nextChar);
-		// -1 Undefined
-		// 0 (space)
-		// 1 Delimiters or Operators
-		// 2 number
-		// 3 alphabet
-		if (currentType != 0){
-			//???
-			if (currentType == 3){
-				if (tempLineChar[columnNum]!="_"){
+		nextLexemeColumn();		
+		if (!fileEOF){
+			// -1 Undefined
+			// 0 (space)
+			// 1 Delimiters or Operators
+			// 2 number
+			// 3 alphabet
+
+			if (currentType != 0){
+				if (currentType == 3){
 					tokenMark=extractIdentWords();
-				}else{
-					tokenMark=62;
+					//columnNum++;
+				}else if(currentType == 2){
+					tokenMark=extractNumber();
+					//columnNum++;
+				}else if(currentType == 1){
+					tokenMark=extractOperators();
+					//columnNum++;
+				}else if(currentType == -1){
+					tokenMark=extractUndefined();
+					//columnNum++;
 				}
-			}else if(currentType == 2){
-				tokenMark=extractNumber();
-			}else if(currentType == 1){
 				
-				tokenMark=extractOperators();
-				
-			}else if(currentType == -1){
-				
-				tokenMark=extractUndefined();
 			}
-			
-		}else if (currentType == -2){
-			lineNum++;
-			//??
-			eof = true;
+			while(tempColumnNum<=columnNum){
+				
+				lexeme += tempLineChar[tempColumnNum];
+				tempColumnNum++;
+			}
+
 		}
+
+	
+		
 		Token token=new Token(tokenMark, lineNum, columnNum, lexeme);
 		
 		
-	
+
 		return token;
 	}
 	
-	private int getTokenMark(String symbol) {
-		switch(symbol) {
-
-			case ",": return 32;
-			case "[": return 33;
-			case "]": return 34;
-			case "(": return 35;
-			case ")": return 36;
-			case "^": return 43;	
-			case ":": return 46;
-			case ";": return 56;
-			case ".": return 57;			
-			//case "=": return 37;
-			//case "+": return 38;
-			//case "-": return 39;
-			//case "*": return 40;
-			//case "/": return 41;
-			//case "%": return 42;
-
-			//case "<": return 44;
-			//case ">": return 45;
-
-			//case "<=": return 47;
-			//case ">=": return 48;
-			//case "!=": return 49;
-			//case "==": return 50;
-			//case "+=": return 51;
-			//case "-=": return 52;
-			//case "*=": return 53;
-			//case "/=": return 54;
-			//case "%=": return 55;
-			
+	// delete comments 
+	private String delComment(String strLine){
+		int i=strLine.indexOf("/--");
+		if(i>=0){
+			strLine=strLine.substring(0,i);
 		}
-		return 62;
-	}	
+		strLine+=" "; // add an speace at end
+		return strLine;
+		
+	}
 	
 	//TIDEN = 58     关键字
 	// extract the Identifiers and Reserved Keywords
@@ -209,7 +171,7 @@ public class Scanner{
 		int tokenNmu=58;
 		
 		//check the end of the Identifiers and Reserved Keywords
-		while((nextType>=2) || (tempLineChar[columnNum+1]=="_")){
+		while((nextType>=2) || (tempLineChar[columnNum+1]=='_')){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
@@ -227,7 +189,7 @@ public class Scanner{
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
 		//Determine if it is a decimal
-		if ((tempLineChar[columnNum+1]==".") && (getType(tempLineChar[columnNum+2])==2)){
+		if ((tempLineChar[columnNum+1]=='.') && (getType(tempLineChar[columnNum+2])==2)){
 			columnNum+=2;
 			nextType=getType(tempLineChar[columnNum+1]);
 			while(nextType==2){
@@ -272,7 +234,6 @@ public class Scanner{
 	}
 		
 	// extract the undefined // TUNDF Undefined
-	
 	private int extractUndefined(){
 		
 		char C=tempLineChar[columnNum];
@@ -287,43 +248,42 @@ public class Scanner{
 	public void printToken(Token tempToken){
 		System.out.print(tempToken.shortString());
 	}
-	
-	// private int getTokenMark(String lexeme) {
-		// switch(lexeme) {
-		// case "EOF": return 0;
-		// case ",": return 32;
-		// case "[": return 33;
-		// case "]": return 34;
-		// case "(": return 35;
-		// case ")": return 36;
-		// case "=": return 37;
-		// case "+": return 38;
-		// case "-": return 39;
-		// case "*": return 40;
-		// case "/": return 41;
-		// case "%": return 42;
-		// case "^": return 43;
-		// case "<": return 44;
-		// case ">": return 45;
-		// case ":": return 46;
-		// case "<=": return 47;
-		// case ">=": return 48;
-		// case "!=": return 49;
-		// case "==": return 50;
-		// case "+=": return 51;
-		// case "-=": return 52;
-		// case "*=": return 53;
-		// case "/=": return 54;
-		// case "%=": return 55;
-		// case ";": return 56;
-		// case ".": return 57;
-		// case "ID": return 58;
-		// case "int": return 59;
-		// case "real": return 60;
-		// case "str": return 61;
-		// return 62;
-	// }
 
+	// token nark of the Delimiters and Operators
+	private int getTokenMark(String symbol) {
+		switch(symbol) {
+
+			case ",": return 32;
+			case "[": return 33;
+			case "]": return 34;
+			case "(": return 35;
+			case ")": return 36;
+			case "^": return 43;	
+			case ":": return 46;
+			case ";": return 56;
+			case ".": return 57;			
+			case "=": return 37;
+			case "+": return 38;
+			case "-": return 39;
+			case "*": return 40;
+			case "/": return 41;
+			case "%": return 42;
+			case "<": return 44;
+			case ">": return 45;
+			case "<=": return 47;
+			case ">=": return 48;
+			case "!=": return 49;
+			case "==": return 50;
+			case "+=": return 51;
+			case "-=": return 52;
+			case "*=": return 53;
+			case "/=": return 54;
+			case "%=": return 55;
+			
+		}
+		return 62;
+	}	
+	
 	
 	//check chat type 
 	private int getType(char C){
@@ -336,7 +296,7 @@ public class Scanner{
 
 		int num = (int)C;
 		if (num<32){return -2;}
-
+// return -2;
 		switch(num){
 			case 32 : return 0;  // (space)
 			case 33 : return 1;  // !
@@ -398,7 +358,7 @@ public class Scanner{
 			case 89 : return 3;  // Y
 			case 90 : return 3;  // Z
 			case 91 : return 1;  // [
-			case 92 : return -1;  // \ 
+			case 92 : return -1;  // "\" 
 			case 93 : return 1;  // ]
 			case 94 : return 1;  // ^
 			case 95 : return -1;  // _

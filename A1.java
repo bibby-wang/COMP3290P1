@@ -20,7 +20,15 @@ public class A1{
 		if (args[0]!=null){
 			Scanner scanner=new Scanner(args[0]);
 //			scanner.getToken();
-			scanner.doScan();
+
+			Token tempToken;
+			//while (!scanner.eof()){
+				int i=0;
+			while (i<100){
+				tempToken = scanner.getToken();
+				scanner.printToken(tempToken);
+				i++;
+			}
 
 			
 
