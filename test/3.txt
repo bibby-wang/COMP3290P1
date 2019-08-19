@@ -1,0 +1,15 @@
+CD19 test
+main
+	x : integer,
+	y : integer,
+	z : integer
+begin
+	input x, y;
+
+	z = x + y;
+	printline z;
+
+	z = x * y;
+	printline z;
+end 
+CD19 test

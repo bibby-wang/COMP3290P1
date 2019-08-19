@@ -1,0 +1,18 @@
+CD19 test
+main
+	x : integer,
+	y : integer,
+	z : integer
+begin
+	input x, y;
+
+	printline "--------------------------";
+	z = x + y;
+	printline x, " plus ", y, " equals ", z;
+
+	z = x * y;
+	printline x, " multipled ", y, " equals ", z;
+
+	printline "--------------------------";
+end 
+CD19 test

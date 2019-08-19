@@ -26,8 +26,8 @@ public class Scanner{
 
 	private char nextChar;
 	private int nextType;	
-	char[] tempLineChar;
-	//
+	private char[] tempLineChar;
+	private String tempLineStr;
 	public Scanner(){
 		
 	}
@@ -72,24 +72,26 @@ public class Scanner{
 	
 	private void nextLexemeColumn(){
 		//find next lexeme starting line and column number
-		
-		while(lineNum <= strArrayLine.size()){
-			
-			int columnL=strArrayLine.get(lineNum).length();
-			String tempLineStr=strArrayLine.get(lineNum);
-			char[] tempLineChar=tempLineStr.toCharArray();
-			
-			while(columnNum<=columnL){
+// System.out.println("");
+// System.out.println("ss== l["+lineNum+"]c["+columnNum+"] [s] "+strArrayLine.size());
+		while(lineNum < strArrayLine.size()){
+
+			tempLineStr=strArrayLine.get(lineNum);
+			int columnL=tempLineStr.length();
+			tempLineChar=tempLineStr.toCharArray();
+	//System.out.println("=="+columnNum+", "+columnL);
+			while(columnNum<columnL){
 				int currentType=getType(tempLineChar[columnNum]);
-				if (currentType!=0){
-					return;
-				}
+//System.out.println("ss== l["+lineNum+"]c["+columnNum+"] [t] "+currentType);				
+				
+				if (currentType!=0) return;
 				columnNum++;
 			}
 			columnNum=0;
 			lineNum++;
 		}
 		if (lineNum>strArrayLine.size()){
+			//System.out.println("eof");
 			fileEOF=true;
 		}
 	}
@@ -99,8 +101,11 @@ public class Scanner{
 		
 
 		int tokenMark=0;
-		String tempLineStr=strArrayLine.get(lineNum);
-		tempLineChar=tempLineStr.toCharArray();
+		
+		nextLexemeColumn();	
+		
+		// tempLineStr=strArrayLine.get(lineNum);
+		// tempLineChar=tempLineStr.toCharArray();
 		
 		char currentChar=tempLineChar[columnNum];
 		int currentType=getType(currentChar);
@@ -110,10 +115,15 @@ public class Scanner{
 
 		int tempColumnNum=columnNum;			
 		
-		String lexeme="";		
+		String lexeme="";
+	
 		currentType=getType(currentChar);
 		nextType=getType(nextChar);
-		nextLexemeColumn();		
+
+
+
+
+//System.out.println("AA== l["+lineNum+"]c["+columnNum+"] [t] "+currentType+"char "+(int)currentChar);		
 		if (!fileEOF){
 			// -1 Undefined
 			// 0 (space)
@@ -129,7 +139,11 @@ public class Scanner{
 					tokenMark=extractNumber();
 					//columnNum++;
 				}else if(currentType == 1){
-					tokenMark=extractOperators();
+					if (tempLineChar[columnNum]=='"'){
+						tokenMark=extractString();
+					}else{
+						tokenMark=extractOperators();
+					}
 					//columnNum++;
 				}else if(currentType == -1){
 					tokenMark=extractUndefined();
@@ -137,19 +151,21 @@ public class Scanner{
 				}
 				
 			}
-			while(tempColumnNum<=columnNum){
-				
-				lexeme += tempLineChar[tempColumnNum];
-				tempColumnNum++;
+			
+			for(int i=tempColumnNum;i<columnNum;i++){
+				// System.out.println("");			
+				// System.out.println("==="+tempColumnNum+": "+tempLineChar[i]+" col ["+columnNum+"]");			
+				lexeme += tempLineChar[i];
+
 			}
 
 		}
-
+		
 	
+		//columnNum++;
+		Token token=new Token(tokenMark, lineNum, tempColumnNum, lexeme);
 		
-		Token token=new Token(tokenMark, lineNum, columnNum, lexeme);
-		
-		
+		if (tokenMark==0) fileEOF=true;
 
 		return token;
 	}
@@ -175,7 +191,7 @@ public class Scanner{
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
-		
+		columnNum++;
 		return tokenNmu;  // TSTRG 
 
 	}
@@ -183,11 +199,12 @@ public class Scanner{
 	// extract the number 
 	// Undefined type does not appear, at least one number
 	private int extractNumber(){
-		int tokenNmu=59;
+		int tokenNmu=59;  //TILIT
 		while(nextType==2){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
+		
 		//Determine if it is a decimal
 		if ((tempLineChar[columnNum+1]=='.') && (getType(tempLineChar[columnNum+2])==2)){
 			columnNum+=2;
@@ -196,9 +213,9 @@ public class Scanner{
 				columnNum++;
 				nextType=getType(tempLineChar[columnNum+1]);
 			}
-			tokenNmu=60;
+			tokenNmu=60; //TFLIT
 		}			
-
+		columnNum++;
 		return tokenNmu;
 	}
 	
@@ -210,7 +227,7 @@ public class Scanner{
 		columnNum++;
 		char C=tempLineChar[columnNum];
 		
-		while((int)C != 34){
+		while((int)C != 34 && columnNum < tempLineChar.length -1){
 			columnNum++;
 			C=tempLineChar[columnNum];
 		}
@@ -224,24 +241,37 @@ public class Scanner{
 	}
 	// extract the Delimiters and Operators
 	private int extractOperators(){
-		
-		char C=tempLineChar[columnNum];
-		while(nextType == -2){
-			columnNum++;
-			nextType=getType(tempLineChar[columnNum+1]);
+		char C=tempLineChar[columnNum+1];
+		String SS="";
+		if (C=='='){
+			SS=tempLineChar[columnNum]+"=";
+		}else{
+			SS=String.valueOf(tempLineChar[columnNum]);
 		}
-		return 62;
+		if (getCoupleSymbolMark(SS)<0){
+			columnNum++;
+			return getSingleSymbolMark(SS);
+		}else{
+			columnNum+=2;
+			return getCoupleSymbolMark(SS);
+		}
+		// while(nextType == -1){
+			// columnNum++;
+			// nextType=getType(tempLineChar[columnNum+1]);
+		// }
+		// return 62;
 	}
 		
 	// extract the undefined // TUNDF Undefined
 	private int extractUndefined(){
 		
+		
 		char C=tempLineChar[columnNum];
-		while(nextType == -2){
+		while(nextType == -1){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
-		return 62;
+		return 62; // TUNDF Undefined
 	}
 		
 	
@@ -250,13 +280,13 @@ public class Scanner{
 	}
 
 	// token nark of the Delimiters and Operators
-	private int getTokenMark(String symbol) {
+	private int getSingleSymbolMark(String symbol) {
 		switch(symbol) {
 
 			case ",": return 32;
 			case "[": return 33;
 			case "]": return 34;
-			case "(": return 35;
+			case "(": return 35; // TLPAR
 			case ")": return 36;
 			case "^": return 43;	
 			case ":": return 46;
@@ -270,6 +300,14 @@ public class Scanner{
 			case "%": return 42;
 			case "<": return 44;
 			case ">": return 45;
+			
+		}
+		return 62;
+	}	
+	// token nark of the Delimiters and Operators
+	private int getCoupleSymbolMark(String symbol) {
+		switch(symbol) {
+
 			case "<=": return 47;
 			case ">=": return 48;
 			case "!=": return 49;
@@ -281,7 +319,7 @@ public class Scanner{
 			case "%=": return 55;
 			
 		}
-		return 62;
+		return -1;
 	}	
 	
 	
@@ -295,15 +333,23 @@ public class Scanner{
 		// 3 alphabet
 
 		int num = (int)C;
-		if (num<32){return -2;}
+
+		// end of text
+		if (num==3){
+			this.fileEOF=true;
+			return -2;
+		}
 // return -2;
+//System.out.println("==================="+num);
 		switch(num){
-			case 32 : return 0;  // (space)
-			case 33 : return 1;  // !
-			case 34 : return 1;  // "
+			
+			case 9  : return 0;	  // tab
+			case 32 : return 0;   // (space)
+			case 33 : return 1;   // !
+			case 34 : return 1;   // "
 			case 35 : return -1;  // #
 			case 36 : return -1;  // $
-			case 37 : return 1;  // %
+			case 37 : return 1;   // %
 			case 38 : return -1;  // &
 			case 39 : return -1;  // '
 			case 40 : return 1;  // (
@@ -393,7 +439,7 @@ public class Scanner{
 			case 124 : return -1;  // |
 			case 125 : return -1;  // }
 			case 126 : return -1;  // ~
-		default : return -2;
+		default : return 0;
 		}
 	}
 	
