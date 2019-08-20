@@ -181,7 +181,7 @@ public class Scanner{
 		
 	}
 	
-	//TIDEN = 58     ¹Ø¼ü×Ö
+	//TIDEN = 58 
 	// extract the Identifiers and Reserved Keywords
 	private int extractIdentWords(){
 		int tokenNmu=58;
@@ -340,7 +340,8 @@ public class Scanner{
 			return -2;
 		}
 // return -2;
-//System.out.println("==================="+num);
+//  System.out.println("==================="+num);
+// check the ASCII CODE
 		switch(num){
 			
 			case 9  : return 0;	  // tab
