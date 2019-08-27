@@ -3,87 +3,78 @@
 // COMP3290 Compiler Design
 // Semester 2, 2019
 // Project Part 1 A Scanner for CD19 (15%) 
-// Due: August 30th
+// Due: August 30th 23:99
 // Binbin.Wang C3214157
-
-
 
 
 import java.util.ArrayList;
 
-	
-
-//import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Scanner{
-	private ArrayList<String> strArrayLine;
-//	private ArrayList<char> charArrayLine;
-
+	private ArrayList<String> strArrayLine;//Separated String for each row
 	private boolean fileEOF;
 	private String fileName;
-	private int lineNum;
-	private int columnNum;
+	private int printCount;
+	private int lineNum; // working on line number
+	private int columnNum; // working on column number
 
 	private char nextChar;
-	private int nextType;	
-	private char[] tempLineChar;
+	private int nextType;	//next char type 
+	private char[] tempLineChar; 
 	private String tempLineStr;
+	
+	//Constructor
 	public Scanner(){
 		
 	}
 
 	//Constructor Initialization input String
 	public Scanner(String name){
+		// Initialization data
 		fileEOF=false;
 		fileName=name;
 		strArrayLine= new ArrayList<String>();
 		lineNum=0;
-		columnNum=0;
 
-		
-		
+		// try open file get all data
 		try {				
 			BufferedReader sourceFile = new BufferedReader(new FileReader(fileName));
 			String strLine;
 
-		
+			//Separated character by strArrayLine
 			while ((strLine = sourceFile.readLine()) != null) {
-				
+				// get String for each row
 				strArrayLine.add(this.delComment(strLine));
 				//test output string line content
 				//System.out.println("strLine: ["+strLine+"] ");
 			}
+			strArrayLine.add("\r\n");//add an empty line at the end
 			sourceFile.close();
-			
-			//Separated character by strArrayLine
-			//doScanner();
-			//Token(int t, int ln, int p, String s) {  //Constructor takes in token number, line, column & lexeme
-			
-			
+
 		} catch (IOException e) {
-			//erro of read file
-			System.out.print("Reading File erro");
+			//Error of read file
+			System.out.println("Reading File Error!");
+			fileEOF=true;
 		}
 	}
 	
+	//end of file
 	public boolean eof(){
 		return this.fileEOF;
 	}
-	
+	// Locate Lexeme Column number
 	private void nextLexemeColumn(){
 		//find next lexeme starting line and column number
-// System.out.println("");
-// System.out.println("ss== l["+lineNum+"]c["+columnNum+"] [s] "+strArrayLine.size());
 		while(lineNum < strArrayLine.size()){
 
 			tempLineStr=strArrayLine.get(lineNum);
 			int columnL=tempLineStr.length();
 			tempLineChar=tempLineStr.toCharArray();
-	//System.out.println("=="+columnNum+", "+columnL);
 			while(columnNum<columnL){
 				int currentType=getType(tempLineChar[columnNum]);
-//System.out.println("ss== l["+lineNum+"]c["+columnNum+"] [t] "+currentType);				
-				
 				if (currentType!=0) return;
 				columnNum++;
 			}
@@ -91,82 +82,76 @@ public class Scanner{
 			lineNum++;
 		}
 		if (lineNum>strArrayLine.size()){
-			//System.out.println("eof");
 			fileEOF=true;
 		}
 	}
 
-
+	// get token
 	public Token getToken(){
-		
-
+		String lexeme="";// lexeme String
 		int tokenMark=0;
-		
+			
+		//Locate the Column number 
 		nextLexemeColumn();	
-		
-		// tempLineStr=strArrayLine.get(lineNum);
-		// tempLineChar=tempLineStr.toCharArray();
-		
-		char currentChar=tempLineChar[columnNum];
-		int currentType=getType(currentChar);
-		
-		nextChar=tempLineChar[columnNum+1];
-		nextType=getType(nextChar);		
-
-		int tempColumnNum=columnNum;			
-		
-		String lexeme="";
+		int tempColumnNum=columnNum;		
+		char currentChar=tempLineChar[columnNum]; // current Char 
+		int currentType=getType(currentChar); // type of current Char		
+		nextChar=tempLineChar[columnNum+1]; // next Char
+		nextType=getType(nextChar);		// type of next Char		
 	
-		currentType=getType(currentChar);
-		nextType=getType(nextChar);
 
-
-
-
-//System.out.println("AA== l["+lineNum+"]c["+columnNum+"] [t] "+currentType+"char "+(int)currentChar);		
 		if (!fileEOF){
+		
+			// type of the Char
 			// -1 Undefined
-			// 0 (space)
+			// 0 (white space eg. space TAB)
 			// 1 Delimiters or Operators
 			// 2 number
 			// 3 alphabet
-
-			if (currentType != 0){
+			
+			if (currentType != 0 ){
 				if (currentType == 3){
 					tokenMark=extractIdentWords();
-					//columnNum++;
 				}else if(currentType == 2){
 					tokenMark=extractNumber();
-					//columnNum++;
 				}else if(currentType == 1){
+					// string or other token
 					if (tempLineChar[columnNum]=='"'){
 						tokenMark=extractString();
 					}else{
 						tokenMark=extractOperators();
+						//find the single "!" token will is undefined
+						if (tokenMark==62) tokenMark=extractUndefined();
 					}
-					//columnNum++;
 				}else if(currentType == -1){
 					tokenMark=extractUndefined();
-					//columnNum++;
 				}
 				
 			}
-			
+			//GET lexeme 
+			// if(tokenMark=61){
+				// for(int i=(tempColumnNum+1);i<(columnNum-1);i++){
+					// lexeme += tempLineChar[i];
+				// }
+			// }else{
+				// for(int i=tempColumnNum;i<columnNum;i++){
+					// lexeme += tempLineChar[i];
+				// }
+			// }
 			for(int i=tempColumnNum;i<columnNum;i++){
-				// System.out.println("");			
-				// System.out.println("==="+tempColumnNum+": "+tempLineChar[i]+" col ["+columnNum+"]");			
 				lexeme += tempLineChar[i];
-
 			}
-
 		}
-		
-	
-		//columnNum++;
+		//check Delimiters or Operators token 
+		if (tokenMark<58 && tokenMark>31) lexeme="";
+		//tack off the "" in String
+		// if(tokenMark==61){
+			// String tempLexeme=lexeme.substring(1,(lexeme.length()-1));
+			// lexeme=tempLexeme;
+			
+		// }
 		Token token=new Token(tokenMark, lineNum, tempColumnNum, lexeme);
-		
 		if (tokenMark==0) fileEOF=true;
-
 		return token;
 	}
 	
@@ -185,7 +170,6 @@ public class Scanner{
 	// extract the Identifiers and Reserved Keywords
 	private int extractIdentWords(){
 		int tokenNmu=58;
-		
 		//check the end of the Identifiers and Reserved Keywords
 		while((nextType>=2) || (tempLineChar[columnNum+1]=='_')){
 			columnNum++;
@@ -204,7 +188,6 @@ public class Scanner{
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
-		
 		//Determine if it is a decimal
 		if ((tempLineChar[columnNum+1]=='.') && (getType(tempLineChar[columnNum+2])==2)){
 			columnNum+=2;
@@ -226,12 +209,11 @@ public class Scanner{
 		//check the next " 
 		columnNum++;
 		char C=tempLineChar[columnNum];
-		
+		// util end of String or end of line 
 		while((int)C != 34 && columnNum < tempLineChar.length -1){
 			columnNum++;
 			C=tempLineChar[columnNum];
 		}
-		
 		if ((int)C == 34){
 			columnNum++;
 			return 61;  // TSTRG String
@@ -239,6 +221,7 @@ public class Scanner{
 			return 62;  // TUNDF Undefined
 		}
 	}
+	
 	// extract the Delimiters and Operators
 	private int extractOperators(){
 		char C=tempLineChar[columnNum+1];
@@ -248,6 +231,7 @@ public class Scanner{
 		}else{
 			SS=String.valueOf(tempLineChar[columnNum]);
 		}
+		// single or couple Symbol
 		if (getCoupleSymbolMark(SS)<0){
 			columnNum++;
 			return getSingleSymbolMark(SS);
@@ -255,79 +239,91 @@ public class Scanner{
 			columnNum+=2;
 			return getCoupleSymbolMark(SS);
 		}
-		// while(nextType == -1){
-			// columnNum++;
-			// nextType=getType(tempLineChar[columnNum+1]);
-		// }
-		// return 62;
 	}
 		
 	// extract the undefined // TUNDF Undefined
 	private int extractUndefined(){
-		
-		
-		char C=tempLineChar[columnNum];
 		while(nextType == -1){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
+		columnNum++;
 		return 62; // TUNDF Undefined
 	}
-		
 	
+	
+	//output to screen
 	public void printToken(Token tempToken){
-		System.out.print(tempToken.shortString());
+		if (tempToken.value()==62){
+			//System.out.println("");
+			
+			System.out.println("");
+			System.out.println("TUNDF ");
+			System.out.println("lexical error "+tempToken.getStr());
+			printCount=0;
+		}else{
+			printCount+=tempToken.shortString().length();
+			if (printCount>60){
+				System.out.println("");
+				printCount=0;				
+			}
+			System.out.print(tempToken.shortString());
+		}
 	}
 
 	// token nark of the Delimiters and Operators
+	// , [ ] ( ) = + - * /% ^ < > : ; .
 	private int getSingleSymbolMark(String symbol) {
 		switch(symbol) {
 
-			case ",": return 32;
-			case "[": return 33;
-			case "]": return 34;
+			case ",": return 32; // TCOMA
+			case "[": return 33; // TLBRK
+			case "]": return 34; // TRBRK
 			case "(": return 35; // TLPAR
-			case ")": return 36;
-			case "^": return 43;	
-			case ":": return 46;
-			case ";": return 56;
-			case ".": return 57;			
-			case "=": return 37;
-			case "+": return 38;
-			case "-": return 39;
-			case "*": return 40;
-			case "/": return 41;
-			case "%": return 42;
-			case "<": return 44;
-			case ">": return 45;
+			case ")": return 36; // TRPAR	
+			case "=": return 37; // TEQUL
+			case "+": return 38; // TPLUS
+			case "-": return 39; // TMINS
+			case "*": return 40; // TSTAR
+			case "/": return 41; // TDIVD
+			case "%": return 42; // TPERC
+			case "^": return 43; // TCART
+			case "<": return 44; // TLESS
+			case ">": return 45; // TGRTR	
+			case ":": return 46; // TCOLN
+								 // 47 - 55 couple Symbol
+			case ";": return 56; // TSEMI
+			case ".": return 57; // TDOT		
 			
 		}
-		return 62;
+		return 62; // TUNDF Undefined
 	}	
 	// token nark of the Delimiters and Operators
+	// <= >= != == += -= *= /=
 	private int getCoupleSymbolMark(String symbol) {
 		switch(symbol) {
 
-			case "<=": return 47;
-			case ">=": return 48;
-			case "!=": return 49;
-			case "==": return 50;
-			case "+=": return 51;
-			case "-=": return 52;
-			case "*=": return 53;
-			case "/=": return 54;
-			//case "%=": return 55;
+			case "<=": return 47; // TLEQL
+			case ">=": return 48; // TGEQL
+			case "!=": return 49; // TNEQL
+			case "==": return 50; // TEQEQ
+			case "+=": return 51; // TPLEQ
+			case "-=": return 52; // TMNEQ
+			case "*=": return 53; // TSTEQ
+			case "/=": return 54; // TDVEQ
+			//case "%=": return 55; // TPCEQ // useless
 			
 		}
 		return -1;
 	}	
 	
-	
 	//check chat type 
 	private int getType(char C){
-
+		// check the ASCII CODE
+		// return number as below:
+		// -2 the end of text
 		// -1 Undefined
-		// 0 (space)
+		// 0 (white space eg. space TAB)
 		// 1 Delimiters or Operators
 		// 2 number
 		// 3 alphabet
@@ -339,11 +335,9 @@ public class Scanner{
 			this.fileEOF=true;
 			return -2;
 		}
-// return -2;
-//  System.out.println("==================="+num);
-// check the ASCII CODE
+
 		switch(num){
-			
+			//all used ASCII code 
 			case 9  : return 0;	  // tab
 			case 32 : return 0;   // (space)
 			case 33 : return 1;   // !

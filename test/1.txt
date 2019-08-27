@@ -8,7 +8,7 @@
 /-- d) several that you expect to run successfully when later compiled by your compiler (and also part 3).
 /--      These should include at least one that just has a main program and simple variables, one that has arrays, and one that has function(s)/procedure(s) using all three methods of parameter passing that are allowed in CD19. (3)
 
-
+!!!!!!!=!!=!!!=
 CD19 p2
 
 func voidSomeFailsInSyntac() : void
@@ -21,7 +21,8 @@ func voidSomeFailsInSyntac() : void
 	end
 
 
-
+ii\iiii@@@??.i
+w==1.1
 
 func voidSomeFailsInSeman(a : integer, b : boolean) : void
 	
@@ -42,4 +43,4 @@ begin
 	z=x+y;
 	printline "z= ", z;
 end 
-CD19 p2
+CD19 p2 #########
