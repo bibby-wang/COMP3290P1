@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 	
 
-import java.io.*;
+//import java.io.*;
 
 public class Scanner{
 	private ArrayList<String> strArrayLine;
@@ -316,7 +316,7 @@ public class Scanner{
 			case "-=": return 52;
 			case "*=": return 53;
 			case "/=": return 54;
-			case "%=": return 55;
+			//case "%=": return 55;
 			
 		}
 		return -1;

@@ -1,7 +1,8 @@
-/-- Student no.: c3214157
-/--      Course: COMP3290
-/--     Polygon: Program to find the area of a polygon
-/-- -------------------------------------------------------------
+/-- Student Name: Binbin Wang
+/-- No: c3214157
+/-- COMP3290
+/-- Part 2 - CD19 Source File Test Programs
+/-- E- compute the area of a polygon
 
 CD19 Polygon
 
@@ -115,5 +116,5 @@ i : integer
 		end
 		
 		printToStd(0, 2);
-	
-	end CD19 Polygon
+	end 
+CD19 Polygon
