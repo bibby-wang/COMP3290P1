@@ -226,19 +226,45 @@ public class Scanner{
 	private int extractOperators(){
 		char C=tempLineChar[columnNum+1];
 		String SS="";
+		// if (C=='='){
+			// SS=tempLineChar[columnNum]+"=";
+		// }else{
+			// SS=String.valueOf(tempLineChar[columnNum]);
+		// }
+		//single or couple Symbol
+		// if (getCoupleSymbolMark(SS)<0){
+			// columnNum++;
+			// SS=String.valueOf(tempLineChar[columnNum]);
+			
+			// return getSingleSymbolMark(SS);
+		// }else{
+			// columnNum+=2;
+			// return getCoupleSymbolMark(SS);
+		// }
+		int num=0;
 		if (C=='='){
 			SS=tempLineChar[columnNum]+"=";
-		}else{
-			SS=String.valueOf(tempLineChar[columnNum]);
+			num=getCoupleSymbolMark(SS);
 		}
+		
+		
 		// single or couple Symbol
-		if (getCoupleSymbolMark(SS)<0){
+		if (num<=0){
+			
+			SS=String.valueOf(tempLineChar[columnNum]);
 			columnNum++;
 			return getSingleSymbolMark(SS);
 		}else{
 			columnNum+=2;
 			return getCoupleSymbolMark(SS);
-		}
+		}	
+		
+		
+		
+		
+		
+		
+		
 	}
 		
 	// extract the undefined // TUNDF Undefined
