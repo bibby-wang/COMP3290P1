@@ -226,28 +226,12 @@ public class Scanner{
 	private int extractOperators(){
 		char C=tempLineChar[columnNum+1];
 		String SS="";
-		// if (C=='='){
-			// SS=tempLineChar[columnNum]+"=";
-		// }else{
-			// SS=String.valueOf(tempLineChar[columnNum]);
-		// }
-		//single or couple Symbol
-		// if (getCoupleSymbolMark(SS)<0){
-			// columnNum++;
-			// SS=String.valueOf(tempLineChar[columnNum]);
-			
-			// return getSingleSymbolMark(SS);
-		// }else{
-			// columnNum+=2;
-			// return getCoupleSymbolMark(SS);
-		// }
 		int num=0;
 		if (C=='='){
 			SS=tempLineChar[columnNum]+"=";
 			num=getCoupleSymbolMark(SS);
 		}
-		
-		
+
 		// single or couple Symbol
 		if (num<=0){
 			
@@ -258,12 +242,7 @@ public class Scanner{
 			columnNum+=2;
 			return getCoupleSymbolMark(SS);
 		}	
-		
-		
-		
-		
-		
-		
+
 		
 	}
 		
@@ -271,11 +250,10 @@ public class Scanner{
 	private int extractUndefined(){
 		
 		if (tempLineChar[columnNum] == '!'){
-			
+			//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");
 			if (columnNum+1 < tempLineStr.length()){
 				
 				if(tempLineChar[columnNum+1] != '='){
-
 					nextType = -1;
 				}else{
 					columnNum--;
@@ -283,11 +261,13 @@ public class Scanner{
 				
 			}else{
 				nextType = -1;
+
 			}
 			//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");
 			
 		}
-//			System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");	
+		//System.out.println("ssssss"+columnNum+"  "+nextType+"  "+tempLineStr.length());
+		//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"] " + nextType);	
 		while(nextType == -1){
 			
 			columnNum++;
@@ -311,9 +291,14 @@ public class Scanner{
 				break;
 			}
 		}
-
+		//System.out.println("s====sssssc "+columnNum+"  n"+nextType+"  "+tempLineStr.length());
 		
-		columnNum++;
+		if(columnNum+1<tempLineStr.length()){
+			if (tempLineChar[columnNum+1] != '!'| nextType<=1){ 
+				columnNum++;
+			}
+		}
+		
 		return 62; // TUNDF Undefined
 	}
 	
@@ -339,8 +324,6 @@ public class Scanner{
 				sToken=tempToken;
 			}
 
-
-			
 			//System.out.println("==one="+sToken.shortString().length());
 			//System.out.println("==size="+printCount);
 			

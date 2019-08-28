@@ -8,5 +8,5 @@
 /-- d) several that you expect to run successfully when later compiled by your compiler (and also part 3).
 /--      These should include at least one that just has a main program and simple variables, one that has arrays, and one that has function(s)/procedure(s) using all three methods of parameter passing that are allowed in CD19. (3)
 
-.=
-%=
+!!!!!!-
+#.
