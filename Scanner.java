@@ -243,10 +243,50 @@ public class Scanner{
 		
 	// extract the undefined // TUNDF Undefined
 	private int extractUndefined(){
-		while(nextType == -1){
-			columnNum++;
-			nextType=getType(tempLineChar[columnNum+1]);
+		
+		if (tempLineChar[columnNum] == '!'){
+			
+			if (columnNum+1 < tempLineStr.length()){
+				
+				if(tempLineChar[columnNum+1] != '='){
+
+					nextType = -1;
+				}else{
+					columnNum--;
+				}
+				
+			}else{
+				nextType = -1;
+			}
+			//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");
+			
 		}
+//			System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");	
+		while(nextType == -1){
+			
+			columnNum++;
+			if (columnNum+1 < tempLineStr.length()) {
+				nextType=getType(tempLineChar[columnNum+1]);
+				if (tempLineChar[columnNum+1] == '!'){
+					
+					if (columnNum+2 < tempLineStr.length()){
+						
+						if(tempLineChar[columnNum+2] != '='){
+
+							nextType = -1;
+						}
+					}else{
+						nextType = -1;
+					}
+					
+					
+				}
+			}else{
+				break;
+			}
+		}
+
+		
 		columnNum++;
 		return 62; // TUNDF Undefined
 	}

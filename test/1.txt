@@ -8,39 +8,5 @@
 /-- d) several that you expect to run successfully when later compiled by your compiler (and also part 3).
 /--      These should include at least one that just has a main program and simple variables, one that has arrays, and one that has function(s)/procedure(s) using all three methods of parameter passing that are allowed in CD19. (3)
 
-!!!!!!!=!!=!!!=
-CD19 p2
 
-func voidSomeFailsInSyntac() : void
-	x : integer
-	x=8;
-	begin
-		
-		if (x>=0)
-		printline "fails syntactically (but succeeds lexically)"
-	end
-
-
-ii\iiii@@@??.i
-w==1.1
-
-func voidSomeFailsInSeman(a : integer, b : boolean) : void
-	
-	begin
-		if(a>=b)
-			return "fails semantically( but succeeds lexically and syntactically)";
-		else
-			printline "fails semantically( but succeeds lexically and syntactically)";
-		end
-	end
-
-
-main
-	x : integer,
-	y : integer
-begin
-	voidOneFailsInSyntac();
-	z=x+y;
-	printline "z= ", z;
-end 
-CD19 p2 #########
+!!=!=!!!!=!!

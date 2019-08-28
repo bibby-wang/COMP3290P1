@@ -27,25 +27,12 @@ public class A1{
 					countToken++;
 					tempToken = scanner.getToken();
 					
-
-					scanner.printToken(tempToken);
-					// if (tempToken.value()==62){
-					
-						// System.out.println("");
-						// System.out.println("TUNDF ");
-						// System.out.println("lexical error "+tempToken.getStr());
-						// countToken=0;
-						
-					// }else{
-						// if (countToken>5){
-							// System.out.println("");
-							// countToken=0;
-						// }					
-					
-					// }
+					System.out.println(tempToken.toString());
+					//scanner.printToken(tempToken);
+	
 				}
 				
-				//System.out.println("Tokens count is: "+countToken);
+				System.out.println("Tokens count is: "+countToken);
 			}
 		}else{
 			//erro of file name
