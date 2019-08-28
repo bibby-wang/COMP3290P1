@@ -48,8 +48,6 @@ public class Scanner{
 			while ((strLine = sourceFile.readLine()) != null) {
 				// get String for each row
 				strArrayLine.add(this.delComment(strLine));
-				//test output string line content
-				//System.out.println("strLine: ["+strLine+"] ");
 			}
 			strArrayLine.add("\r\n");//add an empty line at the end
 			sourceFile.close();
@@ -132,16 +130,6 @@ public class Scanner{
 				
 			}
 			//GET lexeme 
-			// if(tokenMark=61){
-				// for(int i=(tempColumnNum+1);i<(columnNum-1);i++){
-					// lexeme += tempLineChar[i];
-				// }
-			// }else{
-				// for(int i=tempColumnNum;i<columnNum;i++){
-					// lexeme += tempLineChar[i];
-				// }
-			// }
-			//System.out.println("out col: "+columnNum);
 			for(int i=tempColumnNum;i<columnNum;i++){
 				lexeme += tempLineChar[i];
 			}
@@ -207,7 +195,6 @@ public class Scanner{
 	}
 	
 	
-
 	// extract the string "..." 
 	private int extractString(){
 		//check the next " 
@@ -246,33 +233,38 @@ public class Scanner{
 			columnNum+=2;
 			return getCoupleSymbolMark(SS);
 		}	
-
 		
 	}
 		
 	// extract the undefined // TUNDF Undefined
 	private int extractUndefined(){
-		//System.out.println("-== "+columnNum);
+
 		nextType=getType(tempLineChar[columnNum+1]);
-		
+		// check the "!" type "!=" or just "!" 
 		if (tempLineChar[columnNum] == '!'){
-			//System.out.println("1111["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"] "+ nextType);
+			
 			if (columnNum+1 < tempLineStr.length()){
 				
 				if(tempLineChar[columnNum+1] == '!'){
 					nextType = -1;
+					if (columnNum+1 < tempLineStr.length()){
+						if (tempLineChar[columnNum+2] == '=')nextType=1;
+					}
 				}
 			}
 
 			
 		}
+		// check the "!" type "!=" or just "!"
+		if (nextType==1 && tempLineChar[columnNum+1] == '!'&& getType(tempLineChar[columnNum])==-1){nextType = -1;}
+		
 		while(nextType == -1){
 			
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 			if (tempLineChar[columnNum+1] == '!'){
 				
-					nextType=-1;
+				nextType=-1;
 
 				
 				if (columnNum+1 < tempLineStr.length()){
@@ -280,10 +272,8 @@ public class Scanner{
 				}
 			}
 		}
-
-		columnNum++;
-
 		
+		columnNum++;
 		return 62; // TUNDF Undefined
 	}
 	

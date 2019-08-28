@@ -69,14 +69,14 @@ TDOT   3 82
 TIDEN  3 83 g
 TILIT  3 85 47
 TDOT   3 87
-TIDEN  4 5 tab
-TIDEN  4 9 before
-TUNDF  4 16 #$###
-TILIT  4 23 34
-TDOT   4 25
-TUNDF  4 26 _
-TIDEN  4 28 lalala
-TDIVD  4 34
+TIDEN  4 2 tab
+TIDEN  4 6 before
+TUNDF  4 13 #$###
+TILIT  4 20 34
+TDOT   4 22
+TUNDF  4 23 _
+TIDEN  4 25 lalala
+TDIVD  4 31
 TUNDF  5 1 #
 TUNDF  5 3 $$#
 TIDEN  5 6 abc
@@ -128,7 +128,7 @@ TIDEN  9 1 lll
 TUNDF  9 4 !!
 TIDEN  9 8 blank
 TIDEN  9 14 next
-TSTRG  9 18 
+TSTRG  9 18
 TUNDF  9 22 !!#!#
 TEQUL  9 27
 TDIVD  9 29
@@ -305,4 +305,4 @@ TPERC  25 3
 TUNDF  25 4 "another unclosed
 TUNDF  26 1 ##
 TUNDF  26 3 "pfff
-TEOF   27 0
+TEOF   28 1

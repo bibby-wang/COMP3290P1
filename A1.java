@@ -17,6 +17,7 @@ public class A1{
 		//check file name
 		
 		if (args.length>0){
+			//Simultaneous scanning of multiple files
 			for(int i=0; i<args.length; i++){
 				if (i>0)System.out.println("");
 				System.out.println("=====File: "+args[i]+"=====\r\n");
@@ -27,12 +28,12 @@ public class A1{
 					countToken++;
 					tempToken = scanner.getToken();
 					
-					System.out.println(tempToken.toString());
-					//scanner.printToken(tempToken);
+					//System.out.println(tempToken.toString());
+					scanner.printToken(tempToken);
 	
 				}
 				
-				System.out.println("Tokens count is: "+countToken);
+				//System.out.println("\r\n Tokens count is: "+countToken);
 			}
 		}else{
 			//erro of file name
