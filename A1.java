@@ -15,35 +15,38 @@ public class A1{
 	
 	public static void main(String[] args)  {
 		//check file name
-
+		
 		if (args.length>0){
-			Scanner scanner=new Scanner(args[0]);
-			Token tempToken;
-			int countToken=0;
-			while (!scanner.eof()){
-				countToken++;
-				tempToken = scanner.getToken();
-				//System.out.println("");
-
-				scanner.printToken(tempToken);
-				// if (tempToken.value()==62){
-				
-					// System.out.println("");
-					// System.out.println("TUNDF ");
-					// System.out.println("lexical error "+tempToken.getStr());
-					// countToken=0;
+			for(int i=0; i<args.length; i++){
+				if (i>0)System.out.println("");
+				System.out.println("=====File: "+args[i]+"=====\r\n");
+				Scanner scanner=new Scanner(args[i]);
+				Token tempToken;
+				int countToken=0;
+				while (!scanner.eof()){
+					countToken++;
+					tempToken = scanner.getToken();
 					
-				// }else{
-					// if (countToken>5){
-						// System.out.println("");
-						// countToken=0;
-					// }					
-				
-				// }
-			}
-			
-			//System.out.println("Tokens count is: "+countToken);
 
+					scanner.printToken(tempToken);
+					// if (tempToken.value()==62){
+					
+						// System.out.println("");
+						// System.out.println("TUNDF ");
+						// System.out.println("lexical error "+tempToken.getStr());
+						// countToken=0;
+						
+					// }else{
+						// if (countToken>5){
+							// System.out.println("");
+							// countToken=0;
+						// }					
+					
+					// }
+				}
+				
+				//System.out.println("Tokens count is: "+countToken);
+			}
 		}else{
 			//erro of file name
 			System.out.println("Empty File name args[] is Null");

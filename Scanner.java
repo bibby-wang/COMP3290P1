@@ -143,13 +143,13 @@ public class Scanner{
 			}
 		}
 		//check Delimiters or Operators token 
-		if (tokenMark<58 && tokenMark>31) lexeme="";
+		if (tokenMark<58 && tokenMark>31) lexeme=null;
 		//tack off the "" in String
-		// if(tokenMark==61){
-			// String tempLexeme=lexeme.substring(1,(lexeme.length()-1));
-			// lexeme=tempLexeme;
+		if(tokenMark==61){
+			String tempLexeme=lexeme.substring(1,(lexeme.length()-1));
+			lexeme=tempLexeme;
 			
-		// }
+		}
 		Token token=new Token(tokenMark, lineNum, tempColumnNum, lexeme);
 		if (tokenMark==0) fileEOF=true;
 		return token;
@@ -254,20 +254,38 @@ public class Scanner{
 	
 	//output to screen
 	public void printToken(Token tempToken){
+		Token sToken;
 		if (tempToken.value()==62){
-			//System.out.println("");
 			
 			System.out.println("");
 			System.out.println("TUNDF ");
 			System.out.println("lexical error "+tempToken.getStr());
 			printCount=0;
 		}else{
-			printCount+=tempToken.shortString().length();
+			
+			if(tempToken.value()==61){
+				//add "" in string
+				String tokenStr='"'+tempToken.getStr()+'"';
+				sToken= new Token(61,tempToken.getLn(),tempToken.getPos(),tokenStr);
+
+			}else{
+				
+				sToken=tempToken;
+			}
+
+
+			
+			//System.out.println("==one="+sToken.shortString().length());
+			//System.out.println("==size="+printCount);
+			
 			if (printCount>60){
 				System.out.println("");
+				//System.out.println("-----1-----2-----3-----4-----5-----6-----7-----8-----9-----10");
 				printCount=0;				
 			}
-			System.out.print(tempToken.shortString());
+			
+			System.out.print(sToken.shortString());
+			printCount+=sToken.shortString().length();
 		}
 	}
 
