@@ -1,12 +1,2 @@
-/-- Student Name: Binbin Wang
-/-- No: c3214157
-/-- COMP3290
-/-- Part 2 - CD19 Source File Test Programs
-/-- a) at least one that fails syntactically (but succeeds lexically); (1)
-/-- b) at least one that fails semantically( but succeeds lexically and syntactically); (1)
-/-- c) what you consider to be the simplest possible working program in CD19; (1)
-/-- d) several that you expect to run successfully when later compiled by your compiler (and also part 3).
-/--      These should include at least one that just has a main program and simple variables, one that has arrays, and one that has function(s)/procedure(s) using all three methods of parameter passing that are allowed in CD19. (3)
 
-!!!!!!-
-#.
+!!!=

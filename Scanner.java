@@ -121,7 +121,10 @@ public class Scanner{
 					}else{
 						tokenMark=extractOperators();
 						//find the single "!" token will is undefined
-						if (tokenMark==62) tokenMark=extractUndefined();
+						if (tokenMark==62) {
+							columnNum--;
+							tokenMark=extractUndefined();
+						}
 					}
 				}else if(currentType == -1){
 					tokenMark=extractUndefined();
@@ -138,6 +141,7 @@ public class Scanner{
 					// lexeme += tempLineChar[i];
 				// }
 			// }
+			//System.out.println("out col: "+columnNum);
 			for(int i=tempColumnNum;i<columnNum;i++){
 				lexeme += tempLineChar[i];
 			}
@@ -150,7 +154,7 @@ public class Scanner{
 			lexeme=tempLexeme;
 			
 		}
-		Token token=new Token(tokenMark, lineNum, tempColumnNum, lexeme);
+		Token token=new Token(tokenMark, lineNum+1, tempColumnNum+1, lexeme);
 		if (tokenMark==0) fileEOF=true;
 		return token;
 	}
@@ -248,56 +252,37 @@ public class Scanner{
 		
 	// extract the undefined // TUNDF Undefined
 	private int extractUndefined(){
+		//System.out.println("-== "+columnNum);
+		nextType=getType(tempLineChar[columnNum+1]);
 		
 		if (tempLineChar[columnNum] == '!'){
-			//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");
+			//System.out.println("1111["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"] "+ nextType);
 			if (columnNum+1 < tempLineStr.length()){
 				
-				if(tempLineChar[columnNum+1] != '='){
+				if(tempLineChar[columnNum+1] == '!'){
 					nextType = -1;
-				}else{
-					columnNum--;
 				}
-				
-			}else{
-				nextType = -1;
-
 			}
-			//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"]");
+
 			
 		}
-		//System.out.println("ssssss"+columnNum+"  "+nextType+"  "+tempLineStr.length());
-		//System.out.println("["+tempLineChar[columnNum]+"]["+tempLineChar[columnNum+1]+"] " + nextType);	
 		while(nextType == -1){
 			
 			columnNum++;
-			if (columnNum+1 < tempLineStr.length()) {
-				nextType=getType(tempLineChar[columnNum+1]);
-				if (tempLineChar[columnNum+1] == '!'){
-					
-					if (columnNum+2 < tempLineStr.length()){
-						
-						if(tempLineChar[columnNum+2] != '='){
+			nextType=getType(tempLineChar[columnNum+1]);
+			if (tempLineChar[columnNum+1] == '!'){
+				
+					nextType=-1;
 
-							nextType = -1;
-						}
-					}else{
-						nextType = -1;
-					}
-					
-					
+				
+				if (columnNum+1 < tempLineStr.length()){
+					if (tempLineChar[columnNum+2] == '=')nextType=1;
 				}
-			}else{
-				break;
 			}
 		}
-		//System.out.println("s====sssssc "+columnNum+"  n"+nextType+"  "+tempLineStr.length());
-		
-		if(columnNum+1<tempLineStr.length()){
-			if (tempLineChar[columnNum+1] != '!'| nextType<=1){ 
-				columnNum++;
-			}
-		}
+
+		columnNum++;
+
 		
 		return 62; // TUNDF Undefined
 	}
