@@ -144,7 +144,7 @@ public class Token {
 		if ( s.equals("end")       )	return TEND;
 		if ( s.equals("array")     )	return TARAY;
 		if ( s.equals("of")        )	return TOF;
-		if ( s.equals("func")      )	return TFUNC;
+		if ( s.equals("function")  )	return TFUNC;
 		if ( s.equals("void")      )	return TVOID;
 		if ( s.equals("const")     )	return TCNST;
 

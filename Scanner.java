@@ -5,6 +5,9 @@
 // Project Part 1 A Scanner for CD19 (15%) 
 // Due: August 30th 23:99
 // Binbin.Wang C3214157
+// 
+// fixed error from feedback 17/09/2019
+// 
 
 
 import java.util.ArrayList;
@@ -14,7 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Scanner{
-	private ArrayList<String> strArrayLine;//Separated String for each row
+	private ArrayList<String> strArrayLine;// Separated String for each row
 	private boolean fileEOF;
 	private String fileName;
 	private int printCount;
@@ -22,16 +25,16 @@ public class Scanner{
 	private int columnNum; // working on column number
 
 	private char nextChar;
-	private int nextType;	//next char type 
+	private int nextType;	// next char type 
 	private char[] tempLineChar; 
 	private String tempLineStr;
 	
-	//Constructor
+	// Constructor
 	public Scanner(){
 		
 	}
 
-	//Constructor Initialization input String
+	// Constructor Initialization input String
 	public Scanner(String name){
 		// Initialization data
 		fileEOF=false;
@@ -44,28 +47,28 @@ public class Scanner{
 			BufferedReader sourceFile = new BufferedReader(new FileReader(fileName));
 			String strLine;
 
-			//Separated character by strArrayLine
+			// Separated character by strArrayLine
 			while ((strLine = sourceFile.readLine()) != null) {
 				// get String for each row
 				strArrayLine.add(this.delComment(strLine));
 			}
-			strArrayLine.add("\r\n");//add an empty line at the end
+			strArrayLine.add("\r\n");// add an empty line at the end
 			sourceFile.close();
 
 		} catch (IOException e) {
-			//Error of read file
+			// Error of read file
 			System.out.println("Reading File Error!");
 			fileEOF=true;
 		}
 	}
 	
-	//end of file
+	// end of file
 	public boolean eof(){
 		return this.fileEOF;
 	}
 	// Locate Lexeme Column number
 	private void nextLexemeColumn(){
-		//find next lexeme starting line and column number
+		// find next lexeme starting line and column number
 		while(lineNum < strArrayLine.size()){
 
 			tempLineStr=strArrayLine.get(lineNum);
@@ -89,7 +92,7 @@ public class Scanner{
 		String lexeme="";// lexeme String
 		int tokenMark=0;
 			
-		//Locate the Column number 
+		// Locate the Column number 
 		nextLexemeColumn();	
 		int tempColumnNum=columnNum;		
 		char currentChar=tempLineChar[columnNum]; // current Char 
@@ -118,7 +121,7 @@ public class Scanner{
 						tokenMark=extractString();
 					}else{
 						tokenMark=extractOperators();
-						//find the single "!" token will is undefined
+						// find the single "!" token will is undefined
 						if (tokenMark==62) {
 							columnNum--;
 							tokenMark=extractUndefined();
@@ -129,14 +132,14 @@ public class Scanner{
 				}
 				
 			}
-			//GET lexeme 
+			// GET lexeme 
 			for(int i=tempColumnNum;i<columnNum;i++){
 				lexeme += tempLineChar[i];
 			}
 		}
-		//check Delimiters or Operators token 
+		// check Delimiters or Operators token 
 		if (tokenMark<58 && tokenMark>31) lexeme=null;
-		//tack off the "" in String
+		// tack off the "" in String
 		if(tokenMark==61){
 			String tempLexeme=lexeme.substring(1,(lexeme.length()-1));
 			lexeme=tempLexeme;
@@ -147,22 +150,57 @@ public class Scanner{
 		return token;
 	}
 	
-	// delete comments 
-	private String delComment(String strLine){
-		int i=strLine.indexOf("/--");
-		if(i>=0){
-			strLine=strLine.substring(0,i);
+	// delete comments
+	private String delComment(String strLine){		
+		int commFlg=strLine.indexOf("/--");
+		int strFlg=strLine.indexOf('"');
+		if (strFlg>=0 && commFlg>=0){
+			// have both marks, find the position of comments
+			commFlg = findCommIndex(strLine,commFlg);
+		}
+		if(commFlg>=0){
+			strLine=strLine.substring(0,commFlg);
 		}
 		strLine+=" "; // add an speace at end
 		return strLine;
 		
 	}
 	
-	//TIDEN = 58 
+	// find the comments index number
+	private int findCommIndex(String pressStr, int endIndex){
+		int commFlg=pressStr.indexOf("/--", endIndex);
+		int strFlg=pressStr.indexOf('"');
+		int count=0;
+		// Count the quotation marks before comment symbol 
+		while(strFlg < endIndex && strFlg >=0 ){
+			strFlg=pressStr.indexOf('"' , strFlg+1);
+			count++;
+		}
+		// even number of quotation marks, means The definition of the string is correct
+		if (count%2 == 0){
+			// return the index, after that are the comments
+			return commFlg;
+		}else{
+			// if there more quotation marks behind 
+			if(strFlg>0){
+				
+				commFlg=pressStr.indexOf("/--", strFlg);
+				// get next comments marks 
+				if (commFlg>0){
+					// start next searches
+					return findCommIndex(pressStr,commFlg);
+				}
+			}
+			// not find comments 
+			return -1;
+		}	
+	}
+	
+	// TIDEN = 58 
 	// extract the Identifiers and Reserved Keywords
 	private int extractIdentWords(){
 		int tokenNmu=58;
-		//check the end of the Identifiers and Reserved Keywords
+		// check the end of the Identifiers and Reserved Keywords
 		while((nextType>=2) || (tempLineChar[columnNum+1]=='_')){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
@@ -175,12 +213,12 @@ public class Scanner{
 	// extract the number 
 	// Undefined type does not appear, at least one number
 	private int extractNumber(){
-		int tokenNmu=59;  //TILIT
+		int tokenNmu=59;  // TILIT
 		while(nextType==2){
 			columnNum++;
 			nextType=getType(tempLineChar[columnNum+1]);
 		}
-		//Determine if it is a decimal
+		// Determine if it is a decimal
 		if ((tempLineChar[columnNum+1]=='.') && (getType(tempLineChar[columnNum+2])==2)){
 			columnNum+=2;
 			nextType=getType(tempLineChar[columnNum+1]);
@@ -188,7 +226,7 @@ public class Scanner{
 				columnNum++;
 				nextType=getType(tempLineChar[columnNum+1]);
 			}
-			tokenNmu=60; //TFLIT
+			tokenNmu=60; // TFLIT
 		}			
 		columnNum++;
 		return tokenNmu;
@@ -197,7 +235,7 @@ public class Scanner{
 	
 	// extract the string "..." 
 	private int extractString(){
-		//check the next " 
+		// check the next " 
 		columnNum++;
 		char C=tempLineChar[columnNum];
 		// util end of String or end of line 
@@ -278,7 +316,7 @@ public class Scanner{
 	}
 	
 	
-	//output to screen
+	// output to screen
 	public void printToken(Token tempToken){
 		Token sToken;
 		if (tempToken.value()==62){
@@ -290,7 +328,7 @@ public class Scanner{
 		}else{
 			
 			if(tempToken.value()==61){
-				//add "" in string
+				// add "" in string
 				String tokenStr='"'+tempToken.getStr()+'"';
 				sToken= new Token(61,tempToken.getLn(),tempToken.getPos(),tokenStr);
 
@@ -299,12 +337,12 @@ public class Scanner{
 				sToken=tempToken;
 			}
 
-			//System.out.println("==one="+sToken.shortString().length());
-			//System.out.println("==size="+printCount);
+			// System.out.println("==one="+sToken.shortString().length());
+			// System.out.println("==size="+printCount);
 			
 			if (printCount>60){
 				System.out.println("");
-				//System.out.println("-----1-----2-----3-----4-----5-----6-----7-----8-----9-----10");
+				// System.out.println("-----1-----2-----3-----4-----5-----6-----7-----8-----9-----10");
 				printCount=0;				
 			}
 			
@@ -353,13 +391,13 @@ public class Scanner{
 			case "-=": return 52; // TMNEQ
 			case "*=": return 53; // TSTEQ
 			case "/=": return 54; // TDVEQ
-			//case "%=": return 55; // TPCEQ // useless
+			// case "%=": return 55; // TPCEQ // useless
 			
 		}
 		return -1;
 	}	
 	
-	//check chat type 
+	// check chat type 
 	private int getType(char C){
 		// check the ASCII CODE
 		// return number as below:
@@ -379,7 +417,7 @@ public class Scanner{
 		}
 
 		switch(num){
-			//all used ASCII code 
+			// all used ASCII code 
 			case 9  : return 0;	  // tab
 			case 32 : return 0;   // (space)
 			case 33 : return 1;   // !

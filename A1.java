@@ -14,10 +14,10 @@
 public class A1{
 	
 	public static void main(String[] args)  {
-		//check file name
+		// check file name
 		
 		if (args.length>0){
-			//Simultaneous scanning of multiple files
+			// Simultaneous scanning of multiple files
 			for(int i=0; i<args.length; i++){
 				if (i>0)System.out.println("");
 				System.out.println("=====File: "+args[i]+"=====\r\n");
@@ -27,21 +27,15 @@ public class A1{
 				while (!scanner.eof()){
 					countToken++;
 					tempToken = scanner.getToken();
-					
-					//System.out.println(tempToken.toString());
+					// System.out.println(tempToken.toString());
 					scanner.printToken(tempToken);
-	
 				}
-				
-				//System.out.println("\r\n Tokens count is: "+countToken);
+				// System.out.println("\r\n Tokens count is: "+countToken);
 			}
 		}else{
-			//erro of file name
+			// erro of file name
 			System.out.println("Empty File name args[] is Null");
-		}
-		
+		}	
 	}
-
-
-
+	
 }
